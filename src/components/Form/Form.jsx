@@ -1,46 +1,50 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import { Button, FormContainer, Input, Text } from './Form.styled';
 
-export class Form extends Component {
-  state = {
-    name: '',
-    number: '',
+export default function Form({contacts, addContact}) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+ 
+  const handleChange = (evt) => {
+    switch (evt.target.name) {
+      case 'name':
+        setName(evt.target.value);
+        break;
+      case 'number':
+        setNumber(evt.target.value);
+        break;
+      default:
+        break;
+    }
   };
-  handleChange = ({ target }) => {
-    this.setState({
-      [target.name]: target.value,
-    });
-  };
-  handleSub = e => {
-    // створюю новий контакт та провевіряю чи він існує вже
+ const handleSub = e => {
     e.preventDefault();
 
     if (
-      this.props.contacts.some(el =>
-        el.name.toLowerCase().includes(this.state.name.toLowerCase())
+      contacts.some(el =>
+        el.name.toLowerCase().includes(name.toLowerCase())
       )
     ) {
-      alert(`${this.state.name} is already contacts`);
-      this.setState({
-        name: '',
-        number: '',
-      });
+      alert(`${name} is already contacts`);
+      setName('');
+      setNumber('');
       return;
     } else {
       const newContact = {
         id: nanoid(),
-        name: this.state.name,
-        number: this.state.number,
+        name,
+        number,
       };
-      this.props.addContact(newContact);
-      this.setState({ name: '', number: '' });
+    addContact(newContact);
+      setName('');
+      setNumber('');
     }
   };
 
-  render() {
+ 
     return (
-      <form onSubmit={this.handleSub}>
+      <form onSubmit={handleSub}>
         <FormContainer>
           <Text>
             Name
@@ -49,8 +53,8 @@ export class Form extends Component {
               type="text"
               name="name"
               required
-              onChange={this.handleChange}
-              value={this.state.name} />
+              onChange={handleChange}
+              value={name} />
             
           <Text>
             Number </Text>
@@ -58,8 +62,8 @@ export class Form extends Component {
               type="tel"
               name="number"
               required
-              onChange={this.handleChange}
-              value={this.state.number}
+              onChange={handleChange}
+              value={number}
             />
           
           <Button type="submit">Add contact</Button>
@@ -67,4 +71,3 @@ export class Form extends Component {
       </form>
     );
   }
-}
